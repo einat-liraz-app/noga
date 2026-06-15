@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>נוגה</title>
+<style>
+:root{--bg:#fff7ee;--card:#fffdfa;--ink:#3d3028;--muted:#8a7566;--gold:#f3b85b;--peach:#ffd9bf;--green:#dff4dc;--shadow:0 16px 40px rgba(101,69,36,.12);--line:#f1dcc9}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,'Noto Sans Hebrew',sans-serif;background:radial-gradient(circle at 20% 0%,#fff 0,#fff8ef 35%,#ffe9d3 100%);color:var(--ink);min-height:100vh;padding:18px}
+.app{max-width:520px;margin:auto}.hero{text-align:center;padding:22px 10px 10px}.logo{font-size:54px;line-height:1}.title{font-size:32px;font-weight:800;margin:8px 0 2px}.sub{color:var(--muted);font-size:16px}.card{background:rgba(255,253,250,.92);border:1px solid rgba(255,255,255,.8);border-radius:28px;box-shadow:var(--shadow);padding:18px;margin:14px 0}.micWrap{text-align:center}.mic{width:132px;height:132px;border-radius:50%;border:0;background:linear-gradient(145deg,#ffdcbf,#f5b35f);box-shadow:0 14px 30px rgba(205,119,32,.28), inset 0 2px 4px rgba(255,255,255,.6);font-size:58px;cursor:pointer;transition:.18s transform,.18s filter}.mic:active{transform:scale(.96)}.mic.listening{animation:pulse 1s infinite;background:linear-gradient(145deg,#ffb5a1,#f07167);filter:saturate(1.2)}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,113,103,.35),0 14px 30px rgba(205,119,32,.28)}70%{box-shadow:0 0 0 22px rgba(240,113,103,0),0 14px 30px rgba(205,119,32,.28)}100%{box-shadow:0 0 0 0 rgba(240,113,103,0),0 14px 30px rgba(205,119,32,.28)}}
+.status{margin:12px 0 0;color:var(--muted);font-weight:700}.transcript{min-height:54px;background:#fff8f2;border:1px solid var(--line);border-radius:18px;margin-top:14px;padding:14px;font-size:18px;text-align:right;color:var(--ink)}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.btn{border:0;border-radius:18px;padding:14px 12px;font-weight:800;font-size:16px;color:var(--ink);background:#fff1e4;box-shadow:0 8px 18px rgba(101,69,36,.08);cursor:pointer}.btn.primary{background:linear-gradient(145deg,#ffd9bf,#f5b35f)}.btn.green{background:var(--green)}.btn.light{background:#fff}.btn.danger{background:#ffe1dc}.btn:active{transform:scale(.98)}textarea,input{width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:17px;background:#fff;color:var(--ink);font-family:inherit}textarea{min-height:78px;resize:vertical}.small{font-size:13px;color:var(--muted);line-height:1.45}.task{display:flex;gap:10px;align-items:flex-start;background:#fff9f3;border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}.task.done{opacity:.62}.task.done .txt{text-decoration:line-through}.txt{flex:1}.time{font-size:13px;color:var(--muted);margin-top:4px}.empty{text-align:center;color:var(--muted);padding:18px}.hide{display:none}.toast{position:fixed;inset:auto 14px 16px 14px;background:#3d3028;color:#fff;border-radius:20px;padding:14px 18px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.25);display:none;z-index:9}.toast.show{display:block}.alarm{position:fixed;inset:0;background:rgba(61,48,40,.35);display:none;align-items:center;justify-content:center;z-index:10;padding:20px}.alarm.show{display:flex}.alarmBox{background:#fffaf5;border-radius:28px;padding:24px;max-width:420px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.25);text-align:center}.alarmBox h2{margin:0 0 12px}.footer{padding:10px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <div class="logo">🌞</div><div class="title">נוגה</div>
+    <div class="sub">לוחצים, מדברים, ונוגה שומרת לך תזכורת</div>
+  </section>
+
+  <section class="card micWrap">
+    <button id="micBtn" class="mic" aria-label="התחילי או עצרי הקלטה">🎤</button>
+    <div id="status" class="status">לחצי להתחלה - לחצי שוב לסיום</div>
+    <div id="transcript" class="transcript">כאן יופיע התמלול...</div>
+    <div class="row">
+      <button id="stopBtn" class="btn danger hide">עצרי הקלטה</button>
+      <button id="saveNowBtn" class="btn primary hide">שמרי כתזכורת</button>
+    </div>
+    <p class="small">טיפ: לחצי על המיקרופון, דברי, ואז לחצי שוב על המיקרופון לסיום - כמו בוואטאפ.</p>
+  </section>
+
+  <section id="editCard" class="card hide">
+    <b>בדיקת התזכורת לפני שמירה</b>
+    <div style="height:10px"></div>
+    <textarea id="taskText" placeholder="מה להזכיר?"></textarea>
+    <div class="row">
+      <input id="taskDate" type="date">
+      <input id="taskTime" type="time">
+    </div>
+    <div class="row">
+      <button id="saveTask" class="btn primary">שמרי תזכורת</button>
+      <button id="cancelEdit" class="btn light">ביטול</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row" style="align-items:center;grid-template-columns:1fr auto">
+      <h2 style="margin:0">📋 המשימות שלי</h2>
+      <button id="testAlarm" class="btn light" style="padding:10px 12px">🔔 בדיקה</button>
+    </div>
+    <div id="tasks"></div>
+  </section>
+
+  <div class="footer">כדי שהתזכורות יעבדו טוב יותר - השאירי את נוגה פתוחה ברקע.</div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="alarm" class="alarm">
+ <div class="alarmBox">
+  <h2>🔔 נוגה מזכירה לך</h2>
+  <p id="alarmText" style="font-size:20px"></p>
+  <div class="row3">
+    <button id="doneAlarm" class="btn green">בוצע</button>
+    <button id="snooze10" class="btn light">עוד 10 דק׳</button>
+    <button id="closeAlarm" class="btn light">סגור</button>
+  </div>
+ </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let tasks=JSON.parse(localStorage.getItem('noga_simple_tasks')||'[]');
+let rec=null,listening=false,hardTimer=null,currentAlarmId=null,audioCtx=null;
+let micStream=null, analyser=null, silenceTimer=null, monitorTimer=null;
+let finalText='', interimText='', finishing=false, heardVoice=false, lastVoiceAt=0;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function save(){localStorage.setItem('noga_simple_tasks',JSON.stringify(tasks));render();}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
+function pad(n){return String(n).padStart(2,'0')}
+function dtLocal(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
+function speak(t){try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance('עינת, '+t);u.lang='he-IL';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+function beep(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=660;g.gain.value=.0001;o.connect(g);g.connect(audioCtx.destination);o.start();let now=audioCtx.currentTime;g.gain.exponentialRampToValueAtTime(.12,now+.05);g.gain.exponentialRampToValueAtTime(.0001,now+1.2);o.stop(now+1.25)}catch(e){}}
+function requestNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
+
+function cleanRepeats(text){
+  text = String(text || '').replace(/\s+/g,' ').trim();
+  if(!text) return '';
+  let words = text.split(' ');
+  let changed = true;
+  while(changed){
+    changed = false;
+    for(let n=1; n<=8; n++){
+      for(let i=0; i + 2*n <= words.length; i++){
+        let a = words.slice(i, i+n).join(' ');
+        let b = words.slice(i+n, i+2*n).join(' ');
+        if(a && a === b){
+          words.splice(i+n, n);
+          changed = true;
+          i = Math.max(-1, i-2);
+        }
+      }
+    }
+  }
+  return words.join(' ').trim();
+}
+function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,0); let clean=text.replace(/נוגה|תזכירי לי|תזכיר לי|תזכורת|בבקשה/g,'').trim();
+ let min=clean.match(/עוד\s+(\d+)\s*(דקות|דקה|דק)/); let hour=clean.match(/עוד\s+(\d+)\s*(שעות|שעה)/);
+ if(min){d=new Date(now.getTime()+Number(min[1])*60000); clean=clean.replace(min[0],'').trim();}
+ else if(hour){d=new Date(now.getTime()+Number(hour[1])*3600000); clean=clean.replace(hour[0],'').trim();}
+ else { if(/מחר/.test(clean)){d.setDate(d.getDate()+1); clean=clean.replace('מחר','').trim()} if(/היום/.test(clean)){clean=clean.replace('היום','').trim()}
+  const days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת']; let dayIdx=days.findIndex(x=>clean.includes('יום '+x)||clean.includes(x)); if(dayIdx>=0){let cur=d.getDay(); let diff=(dayIdx-cur+7)%7; if(diff===0)diff=7; d.setDate(d.getDate()+diff); clean=clean.replace('יום '+days[dayIdx],'').replace(days[dayIdx],'').trim();}
+  let tm=clean.match(/(?:בשעה|ב-|ב)?\s*(\d{1,2})(?::(\d{2}))?/); if(tm){let h=Number(tm[1]),m=tm[2]?Number(tm[2]):0; if(h<7 && !tm[2]) h+=12; d.setHours(h,m,0,0); clean=clean.replace(tm[0],'').trim()} else d.setMinutes(d.getMinutes()+5);
+ }
+ clean=clean.replace(/^ל|^את\s+/,'').trim(); if(!clean)clean=text; return {text:clean,date:d};}
+function addTaskAuto(text){
+  let p=parseCommand(text);
+  let when=dtLocal(p.date);
+  let cleanText=(p.text||text||'').trim();
+  if(!cleanText) return;
+  // מניעת שמירה כפולה אם Chrome מחזיר את אותה פקודה פעמיים ברצף
+  let last=tasks[tasks.length-1];
+  if(last && last.text===cleanText && Math.abs(new Date(last.when).getTime()-new Date(when).getTime())<2000){
+    $('transcript').textContent='כבר שמרתי: '+cleanText;
+    return;
+  }
+  tasks.push({id:String(Date.now()),text:cleanText,when,done:false,alerted:false});
+  save();
+  $('editCard').classList.add('hide');
+  $('transcript').textContent='נשמר אוטומטית: '+cleanText;
+  toast('נשמרה תזכורת 🌞');
+}
+function openEdit(text){addTaskAuto(text);} 
+function render(){let el=$('tasks');let sorted=[...tasks].sort((a,b)=>new Date(a.when)-new Date(b.when)); if(!sorted.length){el.innerHTML='<div class="empty">אין משימות כרגע 🌞</div>';return} el.innerHTML=sorted.map(t=>`<div class="task ${t.done?'done':''}"><button class="btn ${t.done?'light':'green'}" style="padding:9px 10px" onclick="toggleDone('${t.id}')">${t.done?'↩️':'✓'}</button><div class="txt"><b>${escapeHtml(t.text)}</b><div class="time">${new Date(t.when).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</div></div><button class="btn light" style="padding:9px 10px" onclick="delTask('${t.id}')">🗑️</button></div>`).join('')}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+window.toggleDone=id=>{let t=tasks.find(x=>x.id===id); if(t){t.done=!t.done;save()}}
+window.delTask=id=>{tasks=tasks.filter(x=>x.id!==id);save()}
+async function startRec(){
+ requestNotifications();
+ if(listening){manualStop();return}
+ if(!SR){toast('הדפדפן לא תומך בתמלול. נסי Chrome.');return}
+ finalText=''; interimText=''; finishing=false; listening=true;
+ $('micBtn').classList.add('listening');
+ $('status').textContent='מקליטה... לחצי שוב על המיקרופון לסיום';
+ $('transcript').textContent='מקשיבה...';
+ $('stopBtn').classList.remove('hide');
+ try{
+   audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+   if(audioCtx.state==='suspended') await audioCtx.resume();
+ }catch(e){}
+ rec=new SR();
+ rec.lang='he-IL';
+ rec.continuous=true;
+ rec.interimResults=true;
+ rec.maxAlternatives=1;
+ rec.onstart=()=>{$('status').textContent='מקליטה... לחצי שוב לסיום';};
+ rec.onresult=e=>{
+   let live='';
+   for(let i=0;i<e.results.length;i++){
+     live += e.results[i][0].transcript + ' ';
+   }
+   live = cleanRepeats(live);
+   if(live){
+     interimText = live;
+     $('transcript').textContent = live;
+   }
+   for(let i=e.resultIndex;i<e.results.length;i++){
+     if(e.results[i].isFinal){
+       finalText = cleanRepeats((finalText+' '+e.results[i][0].transcript).trim());
+     }
+   }
+ };
+ rec.onerror=e=>{
+   if(e.error==='not-allowed') finishManual('אין הרשאת מיקרופון');
+   else if(e.error==='no-speech') {$('status').textContent='עדיין מקליטה... לחצי לסיום';}
+   else finishManual('שגיאת מיקרופון');
+ };
+ rec.onend=()=>{
+   if(listening && !finishing){
+     // לפעמים Chrome מסיים לבד. אם עדיין היינו בהקלטה - נסיים יפה עם מה שיש.
+     finishManual('ההקלטה הסתיימה');
+   }
+ };
+ try{rec.start()}catch(e){finishManual('לא הצלחתי להתחיל הקלטה')}
+}
+function manualStop(){finishManual('עצרתי. מעבדת את התמלול...')}
+function stopRec(){manualStop()}
+function finishManual(reason){
+ if(finishing) return;
+ finishing=true;
+ let text=cleanRepeats((interimText||finalText||'').trim());
+ try{rec&&(rec.onend=null,rec.onerror=null,rec.onresult=null,rec.stop())}catch(e){try{rec&&rec.abort()}catch(x){}}
+ listening=false; rec=null;
+ $('micBtn').classList.remove('listening');
+ $('stopBtn').classList.add('hide');
+ $('status').textContent='לחצי להתחלה - לחצי שוב לסיום';
+ if(text && text!=='מקשיבה...'){
+   $('transcript').textContent=text;
+   openEdit(text);
+ } else {
+   $('transcript').textContent='לא נקלט תמלול. נסי שוב: לחצי, דברי קרוב לטלפון, ואז לחצי שוב לסיום.';
+   toast('המיקרופון נעצר, אבל לא התקבל תמלול');
+ }
+ setTimeout(()=>{finishing=false},350);
+}
+$('micBtn').onclick=startRec;$('stopBtn').onclick=stopRec;
+$('saveTask').onclick=()=>{let text=$('taskText').value.trim(); if(!text)return toast('מה להזכיר?'); let when=$('taskDate').value+'T'+($('taskTime').value||'09:00'); tasks.push({id:String(Date.now()),text,when,done:false,alerted:false}); save(); $('editCard').classList.add('hide'); $('transcript').textContent='נשמר: '+text; toast('נשמרה תזכורת 🌞')};
+$('cancelEdit').onclick=()=>$('editCard').classList.add('hide');$('testAlarm').onclick=()=>showAlarm({id:'test',text:'זו בדיקת התראה של נוגה',when:new Date().toISOString()});
+function check(){let now=Date.now(); for(let t of tasks){if(!t.done&&!t.alerted&&new Date(t.when).getTime()<=now){t.alerted=true;save();showAlarm(t);break}}} setInterval(check,15000); render();
+function showAlarm(t){currentAlarmId=t.id;$('alarmText').textContent=t.text;$('alarm').classList.add('show');beep();speak('הגיע הזמן: '+t.text); if('Notification'in window&&Notification.permission==='granted'){new Notification('נוגה מזכירה לך 🌞',{body:t.text})}}
+$('doneAlarm').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t)t.done=true;save()}$('alarm').classList.remove('show')}
+$('snooze10').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t){t.when=new Date(Date.now()+10*60000).toISOString();t.alerted=false;save();toast('נדחה לעוד 10 דקות')}}$('alarm').classList.remove('show')}
+$('closeAlarm').onclick=()=>$('alarm').classList.remove('show');
+</script>
+</body>
+</html>
