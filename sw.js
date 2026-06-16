@@ -1,4 +1,4 @@
-const CACHE_NAME = 'noga-pwa-v26';
+const CACHE_NAME = 'noga-pwa-v33';
 const ASSETS = [
   './',
   './index.html',
