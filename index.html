@@ -3,19 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>העוזר האישי שלי</title>
+<title>נוגה</title>
 <style>
 :root{--bg:#fff7ee;--card:#fffdfa;--ink:#3d3028;--muted:#8a7566;--gold:#f3b85b;--peach:#ffd9bf;--green:#dff4dc;--shadow:0 16px 40px rgba(101,69,36,.12);--line:#f1dcc9}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,'Noto Sans Hebrew',sans-serif;background:radial-gradient(circle at 20% 0%,#fff 0,#fff8ef 35%,#ffe9d3 100%);color:var(--ink);min-height:100vh;padding:18px}
 .app{max-width:520px;margin:auto}.hero{text-align:center;padding:22px 10px 10px}.logo{font-size:54px;line-height:1}.title{font-size:32px;font-weight:800;margin:8px 0 2px}.sub{color:var(--muted);font-size:16px}.card{background:rgba(255,253,250,.92);border:1px solid rgba(255,255,255,.8);border-radius:28px;box-shadow:var(--shadow);padding:18px;margin:14px 0}.micWrap{text-align:center}.mic{width:132px;height:132px;border-radius:50%;border:0;background:linear-gradient(145deg,#ffdcbf,#f5b35f);box-shadow:0 14px 30px rgba(205,119,32,.28), inset 0 2px 4px rgba(255,255,255,.6);font-size:58px;cursor:pointer;transition:.18s transform,.18s filter}.mic:active{transform:scale(.96)}.mic.listening{animation:pulse 1s infinite;background:linear-gradient(145deg,#ffb5a1,#f07167);filter:saturate(1.2)}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,113,103,.35),0 14px 30px rgba(205,119,32,.28)}70%{box-shadow:0 0 0 22px rgba(240,113,103,0),0 14px 30px rgba(205,119,32,.28)}100%{box-shadow:0 0 0 0 rgba(240,113,103,0),0 14px 30px rgba(205,119,32,.28)}}
 .status{margin:12px 0 0;color:var(--muted);font-weight:700}.transcript{min-height:54px;background:#fff8f2;border:1px solid var(--line);border-radius:18px;margin-top:14px;padding:14px;font-size:18px;text-align:right;color:var(--ink)}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.btn{border:0;border-radius:18px;padding:14px 12px;font-weight:800;font-size:16px;color:var(--ink);background:#fff1e4;box-shadow:0 8px 18px rgba(101,69,36,.08);cursor:pointer}.btn.primary{background:linear-gradient(145deg,#ffd9bf,#f5b35f)}.btn.green{background:var(--green)}.btn.light{background:#fff}.btn.danger{background:#ffe1dc}.btn:active{transform:scale(.98)}textarea,input{width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:17px;background:#fff;color:var(--ink);font-family:inherit}textarea{min-height:78px;resize:vertical}.small{font-size:13px;color:var(--muted);line-height:1.45}.task{display:flex;gap:10px;align-items:flex-start;background:#fff9f3;border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}.task.done{opacity:.62}.task.done .txt{text-decoration:line-through}.txt{flex:1}.time{font-size:13px;color:var(--muted);margin-top:4px}.empty{text-align:center;color:var(--muted);padding:18px}.hide{display:none}.toast{position:fixed;inset:auto 14px 16px 14px;background:#3d3028;color:#fff;border-radius:20px;padding:14px 18px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.25);display:none;z-index:9}.toast.show{display:block}.alarm{position:fixed;inset:0;background:rgba(61,48,40,.35);display:none;align-items:center;justify-content:center;z-index:10;padding:20px}.alarm.show{display:flex}.alarmBox{background:#fffaf5;border-radius:28px;padding:24px;max-width:420px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.25);text-align:center}.alarmBox h2{margin:0 0 12px}.footer{padding:10px;text-align:center;color:var(--muted);font-size:12px}
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f3d49a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="העוזר האישי שלי">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 </head>
 <body>
 <div class="app">
   <section class="hero">
-    <div class="logo">🌞</div><div class="title">העוזר האישי שלי</div>
-    <div class="sub">לוחצים, מדברים, והוא שומר לך תזכורת</div>
+    <div class="logo">🌞</div><div class="title">נוגה</div>
+    <div class="sub">לוחצים, מדברים, ונוגה שומרת לך תזכורת</div>
   </section>
 
   <section class="card micWrap">
@@ -44,17 +52,6 @@
   </section>
 
   <section class="card">
-    <b>⚙️ הגדרות קול</b>
-    <div style="height:10px"></div>
-    <select id="voicePref" style="width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:16px;background:#fff;color:var(--ink);font-family:inherit">
-      <option value="male">קול גברי - אם קיים בטלפון</option>
-      <option value="female">קול נשי</option>
-      <option value="default">ברירת מחדל</option>
-    </select>
-    <p class="small">הקולות מגיעים מהטלפון עצמו. אם אין קול גברי בעברית, המכשיר ישמיע את הקול הזמין הקרוב ביותר.</p>
-  </section>
-
-  <section class="card">
     <div class="row" style="align-items:center;grid-template-columns:1fr auto">
       <h2 style="margin:0">📋 המשימות שלי</h2>
       <button id="testAlarm" class="btn light" style="padding:10px 12px">🔔 בדיקה</button>
@@ -62,13 +59,13 @@
     <div id="tasks"></div>
   </section>
 
-  <div class="footer">העוזר האישי שומר משימות, ו-Google Calendar ייתן את ההתראה האמיתית כשהטלפון נעול.</div>
+  <div class="footer">נוגה שומרת משימות, ו-Google Calendar ייתן את ההתראה האמיתית כשהטלפון נעול.</div>
 </div>
 
 <div id="toast" class="toast"></div>
 <div id="alarm" class="alarm">
  <div class="alarmBox">
-  <h2>🔔 העוזר האישי מזכיר לך</h2>
+  <h2>🔔 נוגה מזכירה לך</h2>
   <p id="alarmText" style="font-size:20px"></p>
   <div class="row3">
     <button id="doneAlarm" class="btn green">בוצע</button>
@@ -89,22 +86,7 @@ function save(){localStorage.setItem('noga_simple_tasks',JSON.stringify(tasks));
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
 function pad(n){return String(n).padStart(2,'0')}
 function dtLocal(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function pickVoice(){
-  try{
-    let pref=localStorage.getItem('assistant_voice_pref')||'male';
-    let voices=speechSynthesis.getVoices()||[];
-    let he=voices.filter(v=>/he|Hebrew|עברית/i.test((v.lang||'')+' '+(v.name||'')));
-    let pool=he.length?he:voices;
-    if(pref==='default') return null;
-    let maleWords=['male','גבר','זכר','Avri','Hebrew Male'];
-    let femaleWords=['female','אישה','נקבה','Tali','Hebrew Female'];
-    let words=pref==='male'?maleWords:femaleWords;
-    return pool.find(v=>words.some(w=>((v.name||'')+' '+(v.lang||'')).toLowerCase().includes(w.toLowerCase()))) || pool[0] || null;
-  }catch(e){return null}
-}
-function speak(t){try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance('עינת, '+t);u.lang='he-IL';u.rate=.95;let v=pickVoice();if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
-if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>pickVoice();}
-
+function speak(t){try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance('עינת, '+t);u.lang='he-IL';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
 function beep(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=660;g.gain.value=.0001;o.connect(g);g.connect(audioCtx.destination);o.start();let now=audioCtx.currentTime;g.gain.exponentialRampToValueAtTime(.12,now+.05);g.gain.exponentialRampToValueAtTime(.0001,now+1.2);o.stop(now+1.25)}catch(e){}}
 function requestNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
 
@@ -129,7 +111,7 @@ function cleanRepeats(text){
   }
   return words.join(' ').trim();
 }
-function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,0); let clean=text.replace(/נוגה|העוזר האישי שלי|העוזר האישי|תזכירי לי|תזכיר לי|תזכורת|בבקשה/g,'').trim();
+function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,0); let clean=text.replace(/נוגה|תזכירי לי|תזכיר לי|תזכורת|בבקשה/g,'').trim();
  let min=clean.match(/עוד\s+(\d+)\s*(דקות|דקה|דק)/); let hour=clean.match(/עוד\s+(\d+)\s*(שעות|שעה)/);
  if(min){d=new Date(now.getTime()+Number(min[1])*60000); clean=clean.replace(min[0],'').trim();}
  else if(hour){d=new Date(now.getTime()+Number(hour[1])*3600000); clean=clean.replace(hour[0],'').trim();}
@@ -145,8 +127,8 @@ function googleDate(d){
 function calendarUrl(task){
   let start = new Date(task.when);
   let end = new Date(start.getTime()+30*60000);
-  let title = encodeURIComponent('העוזר האישי: '+task.text);
-  let details = encodeURIComponent('תזכורת שנוצרה דרך העוזר האישי. כדי לקבל התראה בטלפון, לחצי שמירה ביומן Google.');
+  let title = encodeURIComponent('נוגה: '+task.text);
+  let details = encodeURIComponent('תזכורת שנוצרה דרך נוגה. כדי לקבל התראה בטלפון, לחצי שמירה ביומן Google.');
   return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+title+'&dates='+googleDate(start)+'/'+googleDate(end)+'&details='+details;
 }
 function openCalendar(task){
@@ -172,7 +154,8 @@ function addTaskAuto(text){
   tasks.push(task);
   save();
   $('editCard').classList.add('hide');
-  $('transcript').textContent='נשמר אוטומטית: '+cleanText+'\nפותחת לך את Google Calendar לשמירה עם התראה אמיתית...';
+  $('transcript').textContent='נשמר אוטומטית: '+cleanText+'
+פותחת לך את Google Calendar לשמירה עם התראה אמיתית...';
   toast('נשמרה תזכורת 🌞');
   setTimeout(()=>openCalendar(task),350);
 }
@@ -250,14 +233,23 @@ function finishManual(reason){
  setTimeout(()=>{finishing=false},350);
 }
 $('micBtn').onclick=startRec;$('stopBtn').onclick=stopRec;
-if($('voicePref')){ $('voicePref').value=localStorage.getItem('assistant_voice_pref')||'male'; $('voicePref').onchange=()=>{localStorage.setItem('assistant_voice_pref',$('voicePref').value); toast('הגדרת הקול נשמרה'); speak('בדיקת קול');}; }
 $('saveTask').onclick=()=>{let text=$('taskText').value.trim(); if(!text)return toast('מה להזכיר?'); let when=$('taskDate').value+'T'+($('taskTime').value||'09:00'); tasks.push({id:String(Date.now()),text,when,done:false,alerted:false}); save(); $('editCard').classList.add('hide'); $('transcript').textContent='נשמר: '+text; toast('נשמרה תזכורת 🌞')};
-$('cancelEdit').onclick=()=>$('editCard').classList.add('hide');$('testAlarm').onclick=()=>showAlarm({id:'test',text:'זו בדיקת התראה של העוזר האישי',when:new Date().toISOString()});
+$('cancelEdit').onclick=()=>$('editCard').classList.add('hide');$('testAlarm').onclick=()=>showAlarm({id:'test',text:'זו בדיקת התראה של נוגה',when:new Date().toISOString()});
 function check(){let now=Date.now(); for(let t of tasks){if(!t.done&&!t.alerted&&new Date(t.when).getTime()<=now){t.alerted=true;save();showAlarm(t);break}}} setInterval(check,15000); render();
-function showAlarm(t){currentAlarmId=t.id;$('alarmText').textContent=t.text;$('alarm').classList.add('show');beep();speak('הגיע הזמן: '+t.text); if('Notification'in window&&Notification.permission==='granted'){new Notification('העוזר האישי מזכיר לך 🌞',{body:t.text})}}
+function showAlarm(t){currentAlarmId=t.id;$('alarmText').textContent=t.text;$('alarm').classList.add('show');beep();speak('הגיע הזמן: '+t.text); if('Notification'in window&&Notification.permission==='granted'){new Notification('נוגה מזכירה לך 🌞',{body:t.text})}}
 $('doneAlarm').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t)t.done=true;save()}$('alarm').classList.remove('show')}
 $('snooze10').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t){t.when=new Date(Date.now()+10*60000).toISOString();t.alerted=false;save();toast('נדחה לעוד 10 דקות')}}$('alarm').classList.remove('show')}
 $('closeAlarm').onclick=()=>$('alarm').classList.remove('show');
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function(err){
+      console.log('Service Worker registration failed:', err);
+    });
+  });
+}
 </script>
 </body>
 </html>
