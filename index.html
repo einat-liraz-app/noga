@@ -80,7 +80,7 @@ const $=id=>document.getElementById(id);
 let tasks=JSON.parse(localStorage.getItem('noga_simple_tasks')||'[]');
 let rec=null,listening=false,hardTimer=null,currentAlarmId=null,audioCtx=null;
 let micStream=null, analyser=null, silenceTimer=null, monitorTimer=null;
-let finalText='', interimText='', finishing=false, heardVoice=false, lastVoiceAt=0;
+let finalText='', interimText='', finishing=false, heardVoice=false, lastVoiceAt=0, recSession=0, currentTranscript='';
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 function save(){localStorage.setItem('noga_simple_tasks',JSON.stringify(tasks));render();}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
@@ -166,7 +166,10 @@ async function startRec(){
  requestNotifications();
  if(listening){manualStop();return}
  if(!SR){toast('הדפדפן לא תומך בתמלול. נסי Chrome.');return}
- finalText=''; interimText=''; finishing=false; listening=true;
+ try{ if(rec){ rec.onend=null; rec.onerror=null; rec.onresult=null; rec.abort(); } }catch(e){}
+ recSession++;
+ const session=recSession;
+ finalText=''; interimText=''; currentTranscript=''; finishing=false; listening=true;
  $('micBtn').classList.add('listening');
  $('status').textContent='מקליטה... לחצי שוב על המיקרופון לסיום';
  $('transcript').textContent='מקשיבה...';
@@ -177,34 +180,34 @@ async function startRec(){
  }catch(e){}
  rec=new SR();
  rec.lang='he-IL';
- rec.continuous=true;
+ rec.continuous=false;
  rec.interimResults=true;
  rec.maxAlternatives=1;
- rec.onstart=()=>{$('status').textContent='מקליטה... לחצי שוב לסיום';};
+ rec.onstart=()=>{ if(session===recSession) $('status').textContent='מקליטה... לחצי שוב לסיום'; };
  rec.onresult=e=>{
-   let live='';
-   for(let i=0;i<e.results.length;i++){
-     live += e.results[i][0].transcript + ' ';
-   }
-   live = cleanRepeats(live);
-   if(live){
-     interimText = live;
-     $('transcript').textContent = live;
-   }
+   if(session!==recSession) return;
+   let newest='';
    for(let i=e.resultIndex;i<e.results.length;i++){
-     if(e.results[i].isFinal){
-       finalText = cleanRepeats((finalText+' '+e.results[i][0].transcript).trim());
-     }
+     let part=(e.results[i][0].transcript||'').trim();
+     if(part) newest=part;
+     if(e.results[i].isFinal && part) finalText=part;
+   }
+   let live=cleanRepeats((newest || finalText || '').trim());
+   if(live){
+     currentTranscript=live;
+     $('transcript').textContent=live;
    }
  };
  rec.onerror=e=>{
+   if(session!==recSession) return;
    if(e.error==='not-allowed') finishManual('אין הרשאת מיקרופון');
-   else if(e.error==='no-speech') {$('status').textContent='עדיין מקליטה... לחצי לסיום';}
+   else if(e.error==='no-speech') {$('status').textContent='לא שמעתי. לחצי שוב או דברי קרוב לטלפון';}
    else finishManual('שגיאת מיקרופון');
  };
  rec.onend=()=>{
+   if(session!==recSession) return;
    if(listening && !finishing){
-     // לפעמים Chrome מסיים לבד. אם עדיין היינו בהקלטה - נסיים יפה עם מה שיש.
+     // באנדרואיד הזיהוי לפעמים מסתיים לבד. נסיים עם הטקסט האחרון שנקלט.
      finishManual('ההקלטה הסתיימה');
    }
  };
@@ -215,7 +218,8 @@ function stopRec(){manualStop()}
 function finishManual(reason){
  if(finishing) return;
  finishing=true;
- let text=cleanRepeats((interimText||finalText||'').trim());
+ let text=cleanRepeats((currentTranscript||finalText||interimText||'').trim());
+ recSession++;
  try{rec&&(rec.onend=null,rec.onerror=null,rec.onresult=null,rec.stop())}catch(e){try{rec&&rec.abort()}catch(x){}}
  listening=false; rec=null;
  $('micBtn').classList.remove('listening');
@@ -228,7 +232,8 @@ function finishManual(reason){
    $('transcript').textContent='לא נקלט תמלול. נסי שוב: לחצי, דברי קרוב לטלפון, ואז לחצי שוב לסיום.';
    toast('המיקרופון נעצר, אבל לא התקבל תמלול');
  }
- setTimeout(()=>{finishing=false},350);
+ finalText=''; interimText=''; currentTranscript='';
+ setTimeout(()=>{finishing=false},500);
 }
 $('micBtn').onclick=startRec;$('stopBtn').onclick=stopRec;
 $('saveTask').onclick=()=>{let text=$('taskText').value.trim(); if(!text)return toast('מה להזכיר?'); let when=$('taskDate').value+'T'+($('taskTime').value||'09:00'); tasks.push({id:String(Date.now()),text,when,done:false,alerted:false}); save(); $('editCard').classList.add('hide'); $('transcript').textContent='נשמר: '+text; toast('נשמרה תזכורת 🌞')};
