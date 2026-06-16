@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>נוגה</title>
+<title>העוזר האישי שלי</title>
 <style>
 :root{--bg:#fff7ee;--card:#fffdfa;--ink:#3d3028;--muted:#8a7566;--gold:#f3b85b;--peach:#ffd9bf;--green:#dff4dc;--shadow:0 16px 40px rgba(101,69,36,.12);--line:#f1dcc9}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,'Noto Sans Hebrew',sans-serif;background:radial-gradient(circle at 20% 0%,#fff 0,#fff8ef 35%,#ffe9d3 100%);color:var(--ink);min-height:100vh;padding:18px}
@@ -14,8 +14,8 @@
 <body>
 <div class="app">
   <section class="hero">
-    <div class="logo">🌞</div><div class="title">נוגה</div>
-    <div class="sub">לוחצים, מדברים, ונוגה שומרת לך תזכורת</div>
+    <div class="logo">🌞</div><div class="title">העוזר האישי שלי</div>
+    <div class="sub">לוחצים, מדברים, והוא שומר לך תזכורת</div>
   </section>
 
   <section class="card micWrap">
@@ -44,6 +44,17 @@
   </section>
 
   <section class="card">
+    <b>⚙️ הגדרות קול</b>
+    <div style="height:10px"></div>
+    <select id="voicePref" style="width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:16px;background:#fff;color:var(--ink);font-family:inherit">
+      <option value="male">קול גברי - אם קיים בטלפון</option>
+      <option value="female">קול נשי</option>
+      <option value="default">ברירת מחדל</option>
+    </select>
+    <p class="small">הקולות מגיעים מהטלפון עצמו. אם אין קול גברי בעברית, המכשיר ישמיע את הקול הזמין הקרוב ביותר.</p>
+  </section>
+
+  <section class="card">
     <div class="row" style="align-items:center;grid-template-columns:1fr auto">
       <h2 style="margin:0">📋 המשימות שלי</h2>
       <button id="testAlarm" class="btn light" style="padding:10px 12px">🔔 בדיקה</button>
@@ -51,13 +62,13 @@
     <div id="tasks"></div>
   </section>
 
-  <div class="footer">כדי שהתזכורות יעבדו טוב יותר - השאירי את נוגה פתוחה ברקע.</div>
+  <div class="footer">העוזר האישי שומר משימות, ו-Google Calendar ייתן את ההתראה האמיתית כשהטלפון נעול.</div>
 </div>
 
 <div id="toast" class="toast"></div>
 <div id="alarm" class="alarm">
  <div class="alarmBox">
-  <h2>🔔 נוגה מזכירה לך</h2>
+  <h2>🔔 העוזר האישי מזכיר לך</h2>
   <p id="alarmText" style="font-size:20px"></p>
   <div class="row3">
     <button id="doneAlarm" class="btn green">בוצע</button>
@@ -78,7 +89,22 @@ function save(){localStorage.setItem('noga_simple_tasks',JSON.stringify(tasks));
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
 function pad(n){return String(n).padStart(2,'0')}
 function dtLocal(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function speak(t){try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance('עינת, '+t);u.lang='he-IL';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+function pickVoice(){
+  try{
+    let pref=localStorage.getItem('assistant_voice_pref')||'male';
+    let voices=speechSynthesis.getVoices()||[];
+    let he=voices.filter(v=>/he|Hebrew|עברית/i.test((v.lang||'')+' '+(v.name||'')));
+    let pool=he.length?he:voices;
+    if(pref==='default') return null;
+    let maleWords=['male','גבר','זכר','Avri','Hebrew Male'];
+    let femaleWords=['female','אישה','נקבה','Tali','Hebrew Female'];
+    let words=pref==='male'?maleWords:femaleWords;
+    return pool.find(v=>words.some(w=>((v.name||'')+' '+(v.lang||'')).toLowerCase().includes(w.toLowerCase()))) || pool[0] || null;
+  }catch(e){return null}
+}
+function speak(t){try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance('עינת, '+t);u.lang='he-IL';u.rate=.95;let v=pickVoice();if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>pickVoice();}
+
 function beep(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=660;g.gain.value=.0001;o.connect(g);g.connect(audioCtx.destination);o.start();let now=audioCtx.currentTime;g.gain.exponentialRampToValueAtTime(.12,now+.05);g.gain.exponentialRampToValueAtTime(.0001,now+1.2);o.stop(now+1.25)}catch(e){}}
 function requestNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
 
@@ -103,7 +129,7 @@ function cleanRepeats(text){
   }
   return words.join(' ').trim();
 }
-function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,0); let clean=text.replace(/נוגה|תזכירי לי|תזכיר לי|תזכורת|בבקשה/g,'').trim();
+function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,0); let clean=text.replace(/נוגה|העוזר האישי שלי|העוזר האישי|תזכירי לי|תזכיר לי|תזכורת|בבקשה/g,'').trim();
  let min=clean.match(/עוד\s+(\d+)\s*(דקות|דקה|דק)/); let hour=clean.match(/עוד\s+(\d+)\s*(שעות|שעה)/);
  if(min){d=new Date(now.getTime()+Number(min[1])*60000); clean=clean.replace(min[0],'').trim();}
  else if(hour){d=new Date(now.getTime()+Number(hour[1])*3600000); clean=clean.replace(hour[0],'').trim();}
@@ -112,6 +138,25 @@ function parseCommand(text){let now=new Date(), d=new Date(now); d.setSeconds(0,
   let tm=clean.match(/(?:בשעה|ב-|ב)?\s*(\d{1,2})(?::(\d{2}))?/); if(tm){let h=Number(tm[1]),m=tm[2]?Number(tm[2]):0; if(h<7 && !tm[2]) h+=12; d.setHours(h,m,0,0); clean=clean.replace(tm[0],'').trim()} else d.setMinutes(d.getMinutes()+5);
  }
  clean=clean.replace(/^ל|^את\s+/,'').trim(); if(!clean)clean=text; return {text:clean,date:d};}
+function googleDate(d){
+  d = new Date(d);
+  return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+}
+function calendarUrl(task){
+  let start = new Date(task.when);
+  let end = new Date(start.getTime()+30*60000);
+  let title = encodeURIComponent('העוזר האישי: '+task.text);
+  let details = encodeURIComponent('תזכורת שנוצרה דרך העוזר האישי. כדי לקבל התראה בטלפון, לחצי שמירה ביומן Google.');
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+title+'&dates='+googleDate(start)+'/'+googleDate(end)+'&details='+details;
+}
+function openCalendar(task){
+  try{ window.open(calendarUrl(task),'_blank','noopener'); }
+  catch(e){ location.href = calendarUrl(task); }
+}
+window.addToGoogleCalendar=id=>{
+  let t=tasks.find(x=>x.id===id);
+  if(t) openCalendar(t);
+}
 function addTaskAuto(text){
   let p=parseCommand(text);
   let when=dtLocal(p.date);
@@ -123,14 +168,16 @@ function addTaskAuto(text){
     $('transcript').textContent='כבר שמרתי: '+cleanText;
     return;
   }
-  tasks.push({id:String(Date.now()),text:cleanText,when,done:false,alerted:false});
+  let task={id:String(Date.now()),text:cleanText,when,done:false,alerted:false};
+  tasks.push(task);
   save();
   $('editCard').classList.add('hide');
-  $('transcript').textContent='נשמר אוטומטית: '+cleanText;
+  $('transcript').textContent='נשמר אוטומטית: '+cleanText+'\nפותחת לך את Google Calendar לשמירה עם התראה אמיתית...';
   toast('נשמרה תזכורת 🌞');
+  setTimeout(()=>openCalendar(task),350);
 }
 function openEdit(text){addTaskAuto(text);} 
-function render(){let el=$('tasks');let sorted=[...tasks].sort((a,b)=>new Date(a.when)-new Date(b.when)); if(!sorted.length){el.innerHTML='<div class="empty">אין משימות כרגע 🌞</div>';return} el.innerHTML=sorted.map(t=>`<div class="task ${t.done?'done':''}"><button class="btn ${t.done?'light':'green'}" style="padding:9px 10px" onclick="toggleDone('${t.id}')">${t.done?'↩️':'✓'}</button><div class="txt"><b>${escapeHtml(t.text)}</b><div class="time">${new Date(t.when).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</div></div><button class="btn light" style="padding:9px 10px" onclick="delTask('${t.id}')">🗑️</button></div>`).join('')}
+function render(){let el=$('tasks');let sorted=[...tasks].sort((a,b)=>new Date(a.when)-new Date(b.when)); if(!sorted.length){el.innerHTML='<div class="empty">אין משימות כרגע 🌞</div>';return} el.innerHTML=sorted.map(t=>`<div class="task ${t.done?'done':''}"><button class="btn ${t.done?'light':'green'}" style="padding:9px 10px" onclick="toggleDone('${t.id}')">${t.done?'↩️':'✓'}</button><div class="txt"><b>${escapeHtml(t.text)}</b><div class="time">${new Date(t.when).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</div><div style="margin-top:8px"><button class="btn light" style="padding:8px 10px;font-size:13px" onclick="addToGoogleCalendar('${t.id}')">📅 יומן Google</button></div></div><button class="btn light" style="padding:9px 10px" onclick="delTask('${t.id}')">🗑️</button></div>`).join('')}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 window.toggleDone=id=>{let t=tasks.find(x=>x.id===id); if(t){t.done=!t.done;save()}}
 window.delTask=id=>{tasks=tasks.filter(x=>x.id!==id);save()}
@@ -203,10 +250,11 @@ function finishManual(reason){
  setTimeout(()=>{finishing=false},350);
 }
 $('micBtn').onclick=startRec;$('stopBtn').onclick=stopRec;
+if($('voicePref')){ $('voicePref').value=localStorage.getItem('assistant_voice_pref')||'male'; $('voicePref').onchange=()=>{localStorage.setItem('assistant_voice_pref',$('voicePref').value); toast('הגדרת הקול נשמרה'); speak('בדיקת קול');}; }
 $('saveTask').onclick=()=>{let text=$('taskText').value.trim(); if(!text)return toast('מה להזכיר?'); let when=$('taskDate').value+'T'+($('taskTime').value||'09:00'); tasks.push({id:String(Date.now()),text,when,done:false,alerted:false}); save(); $('editCard').classList.add('hide'); $('transcript').textContent='נשמר: '+text; toast('נשמרה תזכורת 🌞')};
-$('cancelEdit').onclick=()=>$('editCard').classList.add('hide');$('testAlarm').onclick=()=>showAlarm({id:'test',text:'זו בדיקת התראה של נוגה',when:new Date().toISOString()});
+$('cancelEdit').onclick=()=>$('editCard').classList.add('hide');$('testAlarm').onclick=()=>showAlarm({id:'test',text:'זו בדיקת התראה של העוזר האישי',when:new Date().toISOString()});
 function check(){let now=Date.now(); for(let t of tasks){if(!t.done&&!t.alerted&&new Date(t.when).getTime()<=now){t.alerted=true;save();showAlarm(t);break}}} setInterval(check,15000); render();
-function showAlarm(t){currentAlarmId=t.id;$('alarmText').textContent=t.text;$('alarm').classList.add('show');beep();speak('הגיע הזמן: '+t.text); if('Notification'in window&&Notification.permission==='granted'){new Notification('נוגה מזכירה לך 🌞',{body:t.text})}}
+function showAlarm(t){currentAlarmId=t.id;$('alarmText').textContent=t.text;$('alarm').classList.add('show');beep();speak('הגיע הזמן: '+t.text); if('Notification'in window&&Notification.permission==='granted'){new Notification('העוזר האישי מזכיר לך 🌞',{body:t.text})}}
 $('doneAlarm').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t)t.done=true;save()}$('alarm').classList.remove('show')}
 $('snooze10').onclick=()=>{if(currentAlarmId&&currentAlarmId!=='test'){let t=tasks.find(x=>x.id===currentAlarmId);if(t){t.when=new Date(Date.now()+10*60000).toISOString();t.alerted=false;save();toast('נדחה לעוד 10 דקות')}}$('alarm').classList.remove('show')}
 $('closeAlarm').onclick=()=>$('alarm').classList.remove('show');
