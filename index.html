@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>נוגה</title>
+<title>העוזר האישי שלי</title>
 <style>
 :root{--bg:#fff7ee;--card:#fffdfa;--ink:#3d3028;--muted:#8a7566;--gold:#f3b85b;--peach:#ffd9bf;--green:#dff4dc;--shadow:0 16px 40px rgba(101,69,36,.12);--line:#f1dcc9}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,'Noto Sans Hebrew',sans-serif;background:radial-gradient(circle at 20% 0%,#fff 0,#fff8ef 35%,#ffe9d3 100%);color:var(--ink);min-height:100vh;padding:18px}
@@ -22,8 +22,8 @@
 <body>
 <div class="app">
   <section class="hero">
-    <div class="logo">🌞</div><div class="title">נוגה</div>
-    <div class="sub">לוחצים, מדברים, ונוגה שומרת לך תזכורת</div>
+    <div class="logo">🌞</div><div class="title">העוזר האישי שלי</div>
+    <div class="sub">לוחצים, מדברים, והמשימה נשמרת אוטומטית</div>
   </section>
 
   <section class="card micWrap">
@@ -59,13 +59,13 @@
     <div id="tasks"></div>
   </section>
 
-  <div class="footer">נוגה שומרת משימות, ו-Google Calendar ייתן את ההתראה האמיתית כשהטלפון נעול.</div>
+  <div class="footer">העוזר האישי שלי שומר משימות פרטית במכשיר. לקבלת התראות: השאירי את האפליקציה פתוחה ברקע.</div>
 </div>
 
 <div id="toast" class="toast"></div>
 <div id="alarm" class="alarm">
  <div class="alarmBox">
-  <h2>🔔 נוגה מזכירה לך</h2>
+  <h2>🔔 העוזר האישי שלי מזכיר לך</h2>
   <p id="alarmText" style="font-size:20px"></p>
   <div class="row3">
     <button id="doneAlarm" class="btn green">בוצע</button>
@@ -154,13 +154,11 @@ function addTaskAuto(text){
   tasks.push(task);
   save();
   $('editCard').classList.add('hide');
-  $('transcript').textContent='נשמר אוטומטית: '+cleanText+'
-פותחת לך את Google Calendar לשמירה עם התראה אמיתית...';
+  $('transcript').textContent='נשמר אוטומטית: '+cleanText;
   toast('נשמרה תזכורת 🌞');
-  setTimeout(()=>openCalendar(task),350);
 }
 function openEdit(text){addTaskAuto(text);} 
-function render(){let el=$('tasks');let sorted=[...tasks].sort((a,b)=>new Date(a.when)-new Date(b.when)); if(!sorted.length){el.innerHTML='<div class="empty">אין משימות כרגע 🌞</div>';return} el.innerHTML=sorted.map(t=>`<div class="task ${t.done?'done':''}"><button class="btn ${t.done?'light':'green'}" style="padding:9px 10px" onclick="toggleDone('${t.id}')">${t.done?'↩️':'✓'}</button><div class="txt"><b>${escapeHtml(t.text)}</b><div class="time">${new Date(t.when).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</div><div style="margin-top:8px"><button class="btn light" style="padding:8px 10px;font-size:13px" onclick="addToGoogleCalendar('${t.id}')">📅 יומן Google</button></div></div><button class="btn light" style="padding:9px 10px" onclick="delTask('${t.id}')">🗑️</button></div>`).join('')}
+function render(){let el=$('tasks');let sorted=[...tasks].sort((a,b)=>new Date(a.when)-new Date(b.when)); if(!sorted.length){el.innerHTML='<div class="empty">אין משימות כרגע 🌞</div>';return} el.innerHTML=sorted.map(t=>`<div class="task ${t.done?'done':''}"><button class="btn ${t.done?'light':'green'}" style="padding:9px 10px" onclick="toggleDone('${t.id}')">${t.done?'↩️':'✓'}</button><div class="txt"><b>${escapeHtml(t.text)}</b><div class="time">${new Date(t.when).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</div></div><button class="btn light" style="padding:9px 10px" onclick="delTask('${t.id}')">🗑️</button></div>`).join('')}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 window.toggleDone=id=>{let t=tasks.find(x=>x.id===id); if(t){t.done=!t.done;save()}}
 window.delTask=id=>{tasks=tasks.filter(x=>x.id!==id);save()}
